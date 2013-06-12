@@ -17,6 +17,8 @@ class WpDocumentRevisionsAddon{
 	static function init(){
 		add_filter('document_revisions_cpt', array(get_class(), 'filtering_documents_metaboxes'), 10, 1);
 		add_action('admin_enqueue_scripts', array(get_class(), 'admin_enqueue_scripts'));
+		
+		add_action('admin_menu', array(get_class(), 'admin_menu'));
 	}
 	
 	
@@ -79,14 +81,16 @@ class WpDocumentRevisionsAddon{
 	 */
 	static function meta_cb() {
 	
-		global $post;
-
+		
 		//remove unused meta boxes
 		//remove_meta_box('submitdiv', 'document', 'side');
 		remove_meta_box( 'revisionsdiv', 'document', 'normal' );
 		remove_meta_box( 'postexcerpt', 'document', 'normal' );
 		remove_meta_box( 'tagsdiv-workflow_state', 'document', 'side' );
-
+		
+		remove_meta_box('submitdiv', 'document', 'side', 'core');
+		
+		
 		//add our meta boxes
 		add_meta_box( 'revision-summary', __('Revision Summary', 'wp-document-revisions'), array(&self::$metabox_object, 'revision_summary_cb'), 'document', 'normal', 'default' );
 		add_meta_box( 'document', __('Document', 'wp-document-revisions'), array(&self::$metabox_object, 'document_metabox'), 'document', 'normal', 'high' );
@@ -97,9 +101,10 @@ class WpDocumentRevisionsAddon{
 			add_meta_box( 'revision-log', 'Revision Log', array( &self::$metabox_object, 'revision_metabox'), 'document', 'normal', 'low' );
 		
 			
-		if ( taxonomy_exists( 'workflow_state' ) )
+		if ( taxonomy_exists( 'workflow_state' ) && current_user_can('remove_users')){
 			add_meta_box( 'workflow-state', __('Workflow State', 'wp-document-revisions'), array( &self::$metabox_object, 'workflow_state_metabox_cb'), 'document', 'side', 'default' );
-		
+		}
+				
 		
 		//move author div to make room for ours
 		remove_meta_box( 'authordiv', 'document', 'normal' );
@@ -113,6 +118,52 @@ class WpDocumentRevisionsAddon{
 
 		do_action( 'document_edit' );
 		
+	}
+	
+	
+	
+	/**
+	 * submenus for document addons
+	 * */
+	static function admin_menu(){
+		add_submenu_page('edit.php?post_type=document', 'Paypal Credentials', 'Paypal', 'manage_options', 'papal-for-documents', array(get_class(), 'configure_payapl'));
+		add_submenu_page('edit.php?post_type=document', 'Document Plans', 'Plan & Price', 'manage_options', 'plan-nd-price-for-documents', array(get_class(), 'plan_and_price'));		
+	}
+	
+	
+	
+	/**
+	 * configuring paypal
+	 * */
+	static function configure_payapl(){
+		include self::get_file_directory('templates/admin/paypal.php');		
+	}
+	
+	
+	
+	/**
+	 * allow admin to set the plan and Price
+	 * */
+	static function plan_and_price(){
+		include self::get_file_directory('templates/admin/plan-nd-price.php');
+	}
+	
+	
+	
+	/**
+	 * return the paypal caredetials
+	 * */
+	static function get_paypal_credentials(){
+		return get_option('document_revision_paypal');
+	}
+	
+	
+	
+	/**
+	 * get the plan and prices
+	 * */
+	static function get_plans_prices(){
+		return get_option('document_revision_plan_price');
 	}
 	
 }

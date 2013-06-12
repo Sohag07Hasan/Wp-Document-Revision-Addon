@@ -47,8 +47,9 @@
 		
 	</table>
 	
+	<!-- 
 	<div class="Paypal-message" style="display:none"> Wait ... </div>
 	<p id="paypal-payment"> <input type="button" value="Pay with Paypal" class="button button-primary" /></p>
-	
+	 -->
 	
 </div>
