@@ -4,15 +4,12 @@
 	}
 </style>
 
-<?php 
-	$file_types = array('Word', 'TeX', 'PDF', 'PPT', 'Excel', 'Images');
-?>
 <div class="file-uploader">
 	<table class="form-table">
 		<tr>
 			<th scope="row">Your country *</th>
 			<td>
-				<select name="country">
+				<select document_revision="country" name="country">
 					<option value="USA">USA</option>
 					<option value="UK">UK</option>
 				</select>
@@ -23,9 +20,9 @@
 			<th scope="row">Your manuscript's file type *</th>
 			<td>
 				<?php 
-					foreach($file_types as $key => $type){
+					foreach(self::$file_types as $key => $type){
 						?>
-						<input id="<?php echo 'file_type_' . $key; ?>" type="radio" name="file_type" value="<?php echo $key +1; ?>" /> <label for="<?php echo 'file_type_' . $key; ?>"><?php echo $type; ?> </label> &nbsp; &nbsp;
+						<input <?php echo $key == 0 ? 'checked' : ''; ?> document_revision="file_type" id="<?php echo 'file_type_' . $key; ?>" type="radio" name="file_type" value="<?php echo $key +1; ?>" /> <label for="<?php echo 'file_type_' . $key; ?>"><?php echo $type; ?> </label> &nbsp; &nbsp;
 						<?php 
 					}
 				?>
@@ -35,14 +32,14 @@
 		<tr>
 			<th>Show me *</th>
 			<td>
-				<input type="radio" name="show_me" value="1" id="show_me_1" /> <label for="show_me_1"> Low-price plans first </label> &nbsp; &nbsp;
-				<input type="radio" name="show_me" value="2" id="show_me_2" /> <label for="show_me_2"> Fastest plans first </label>
+				<input checked document_revision="show_me" type="radio" name="show_me" value="1" id="show_me_1" /> <label for="show_me_1"> Low-price plans first </label> &nbsp; &nbsp;
+				<input document_revision="show_me" type="radio" name="show_me" value="2" id="show_me_2" /> <label for="show_me_2"> Fastest plans first </label>
 			</td>
 		</tr>
 		
 		<tr>
 			<th scope="row"><label for="word_count"> Word count for your manuscript *</label></th>
-			<td> <input type="text" name="word_count" value="" id="word_count" /> <input type="button" name="search" value="search" class="button-primary button"> </td>
+			<td> <input document_revision="word_count" type="text" name="word_count" value="" id="word_count" /> <input id="document_revision_search" document_revision="search" type="button" name="search" value="search" class="button-primary button"> </td>
 		</tr>
 		
 	</table>

@@ -1,2 +1,35 @@
-@CHARSET "UTF-8";
 
+/* Plans and Price metabox */
+div.plan-holder{
+	padding: 10px;
+}
+
+div.plan-holder table td{
+	padding-right: 10px;
+}
+
+div.plan-holder table th{
+	padding-right: 10px;
+}
+
+div.overlay{
+	background-color: grey;
+	opacity: 0.5;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    background-image: url('images/ajax-loader.gif');
+    background-repeat: no-repeat;
+    
+    /* background-attachment:fixed; */
+	background-position: center;       
+}
+
+
+/* Dynamically hide and show the price and plan metabox */
+div#Price_and_Plan{
+	display: none;
+}

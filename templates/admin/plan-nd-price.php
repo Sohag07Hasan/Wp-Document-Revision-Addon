@@ -1,17 +1,7 @@
 <?php 
 
-	$rows = array(
-				array('premium', 'Premium Editing'),
-			    array('advanced', 'Advanced Editing'),
-				array('proof', 'Proofreading')
-			);
-
-	$cols = array(
-				array('rush', 'Rush'),
-				array('5day', '5 Day'),
-				array('2week', '2 Week')
-			);
-
+	$rows = self::$plans;
+	$cols = self::$intervals;
 	
 	if($_POST['plan-nd-price'] == 'Y'){
 		update_option('document_revision_plan_price', array('plan' => $_POST['plan'], 'price' => $_POST['price']));

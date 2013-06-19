@@ -5,19 +5,23 @@
 class WpDocumentRevisionPaypal{
 	
 	var $options = array();
+	var $posted = array();
 			
 	/**
 	 * constructor
 	 * */
 	function __construct(){
+		
+		$paypal = WpDocumentRevisionsAddon::get_paypal_credentials();
+		
 		$this->options['live_url'] = 'https://www.paypal.com/cgi-bin/webscr';
 		$this->options['test_url'] = 'https://www.sandbox.paypal.com/cgi-bin/webscr';
 		$this->options['notify_url']   = str_replace( 'https:', 'http:', add_query_arg( 'wc-api', 'WC_Gateway_Paypal', home_url( '/' ) ) );
 		$this->options['description'] = 'Wp Revisions Payment';
-		$this->options['email'] = 'hyde.sohag@gmail.com';
-		$this->options['receiver_email'] = 'hyde.sohag@gmail.com';
-		$this->options['test_mode'] = true;
-		$this->options['invoice_prefix'] = 'WpDocumentRevision_';
+		$this->options['email'] = $paypal['email'];
+		$this->options['receiver_email'] = $paypal['email'];
+		$this->options['test_mode'] = $paypal['sandbox'] == '1';
+		$this->options['invoice_prefix'] = $paypal['prefix'];
 		
 		
 		//actions to handle the payment
@@ -30,10 +34,24 @@ class WpDocumentRevisionPaypal{
 	 * start the payemtn procedure
 	 * */
 	function start_payment_process(){
-		$result = $this->process_payment();
-		if($result['result'] == 'success'){
-			echo $result['redirect'];
+		$keys = array('file_type', 'country', 'show_me', 'word_count', 'plan', 'price');
+		$post_id = $_POST['post_id'];
+		$this->posted = $_POST;
+		
+		if(!empty($post_id)){
+			foreach($keys as $key){
+				update_post_meta($post_id, '_' . $key, $_POST[$key]);
+			}
+			
+			$result = $this->process_payment();
+			if($result['result'] == 'success'){
+				echo $result['redirect'];
+			}
 		}
+		else{
+			echo 'false';
+		}
+		
 		exit;
 	}
 	
@@ -73,13 +91,13 @@ class WpDocumentRevisionPaypal{
 			'rm' 					=> is_ssl() ? 2 : 1,
 			'upload' 				=> 1,
 			'notify_url'			=> $this->options['notify_url'],
-			'email'					=> 'hasan.hasan.@yahoo.com',
-			'country'				=> 'Bangladesh',
+			'email'					=> $this->options['email'],
+			'country'				=> $this->posted['country'],
 			'no_shipping'			=> 1,
-			'item_name_1'			=> 'Doc File',
+			'item_name_1'			=> $this->posted['file_type'] . ' 1',
 			'quantity_1'			=> 1,
-			'amount_1'				=> number_format(50.154, 2, '.', ''),
-			'return'				=> 'http://localhost/wp/wp-admin/post.php?post=7&action=edit'
+			'amount_1'				=> number_format($this->posted['price'], 2, '.', ''),
+			'return'				=> sprintf(admin_url('wp-admin/post.php?post=%s&action=edit&payment_status=%s'), $this->posted['post_id'], 'paid')
 				
 		);
 		

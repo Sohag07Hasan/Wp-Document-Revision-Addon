@@ -6,6 +6,7 @@
 define("WPDOCUMENTREVISIONS_DIR", dirname(__FILE__));
 define("WPDOCUMENTREVISIONS_URI", plugins_url('/', __FILE__));
 
+session_start();
 
 include WPDOCUMENTREVISIONS_DIR . '/classes/class.revisions-addon.php';
 WpDocumentRevisionsAddon::init();

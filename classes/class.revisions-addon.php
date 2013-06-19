@@ -9,6 +9,20 @@ class WpDocumentRevisionsAddon{
 	
 	static $metabox_object;
 	
+	static $plans = array(
+				array('premium', 'Premium Editing'),
+			    array('advanced', 'Advanced Editing'),
+				array('proof', 'Proofreading')
+			);
+	
+	static $intervals = array(
+				array('rush', 'Rush'),
+				array('5day', '5 Day'),
+				array('2week', '2 Week')
+			);
+	
+	static $file_types = array('Word', 'TeX', 'PDF', 'PPT', 'Excel', 'Images');
+	
 	
 	/**
 	 * static constructor
@@ -19,6 +33,12 @@ class WpDocumentRevisionsAddon{
 		add_action('admin_enqueue_scripts', array(get_class(), 'admin_enqueue_scripts'));
 		
 		add_action('admin_menu', array(get_class(), 'admin_menu'));
+		
+		//actions to handle the payment
+		add_action('wp_ajax_DocRevision_Pric_Plan', array(get_class(), 'manipulate_price_and_plan_metabx'));
+		add_action('wp_ajax_nopriv_DocRevision_Pric_Plan', array(get_class(), 'manipulate_price_and_plan_metabx'));
+		
+		//add_action('init', array(get_class(), 'manipulate_price_and_plan_metabx'));
 	}
 	
 	
@@ -33,7 +53,8 @@ class WpDocumentRevisionsAddon{
 		wp_register_script('wprevision_file_uploader_js', WPDOCUMENTREVISIONS_URI . 'staticfiles/js/file_uploader.js', array('jquery'));
 		wp_enqueue_script('wprevision_file_uploader_js');
 		wp_localize_script('wprevision_file_uploader_js', 'WpDocRevision', array(
-			'ajax_url' => admin_url('admin-ajax.php')
+			'ajax_url' => admin_url('admin-ajax.php'),
+			'plan_price' => self::get_plans_prices()
 		));
 	}
 	
@@ -46,6 +67,12 @@ class WpDocumentRevisionsAddon{
 		include self::get_file_directory('templates/metaboxes/new_submit_metabox.php');
 	}
 	
+	/**
+	 * plan and price metabox
+	 * */
+	static function plan_price_metabox(){
+		include self::get_file_directory('templates/metaboxes/plan_price_metabox.php');
+	}
 	
 	
 	/**
@@ -95,7 +122,9 @@ class WpDocumentRevisionsAddon{
 		add_meta_box( 'revision-summary', __('Revision Summary', 'wp-document-revisions'), array(&self::$metabox_object, 'revision_summary_cb'), 'document', 'normal', 'default' );
 		add_meta_box( 'document', __('Document', 'wp-document-revisions'), array(&self::$metabox_object, 'document_metabox'), 'document', 'normal', 'high' );
 		
+		//revised
 		add_meta_box('Document_uploader', 'Instant Search for Quotes', array(get_class(), 'file_uploader_metabox'), 'document', 'normal', 'core');
+		add_meta_box('Price_and_Plan', 'Price and Plan', array(get_class(), 'plan_price_metabox'), 'document', 'normal', 'core');
 		
 		if ( $post->post_content != '' )
 			add_meta_box( 'revision-log', 'Revision Log', array( &self::$metabox_object, 'revision_metabox'), 'document', 'normal', 'low' );
@@ -166,4 +195,20 @@ class WpDocumentRevisionsAddon{
 		return get_option('document_revision_plan_price');
 	}
 	
+	
+	/**
+	  Manipulation of ajax for showing and hide metabox price and plan with appropriate prefille data
+	 * */
+	static function manipulate_price_and_plan_metabx(){
+		
+		
+		$_SESSION['country'] = $_POST['country'];
+		$_SESSION['file_type'] = $_POST['file_type'];
+		$_SESSION['show_me'] = $_POST['show_me'];
+		$_SESSION['word_count'] = $_POST['word_count'];
+		
+		$plan_price = self::get_plans_prices();
+		
+		var_dump($plan_price);
+	}
 }
