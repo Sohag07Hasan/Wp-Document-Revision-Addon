@@ -24,7 +24,7 @@ class WpDocumentRevisionsAddon{
 	static $file_types = array('Word', 'TeX', 'PDF', 'PPT', 'Excel', 'Images');
 	
 	//keys that defines a document in database
-	static $document_keys = array('file_type', 'country', 'show_me', 'word_count', 'plan', 'price');
+	static $document_keys = array('post_id', 'file_type', 'country', 'show_me', 'word_count', 'plan', 'price', 'interval');
 	
 	//save the paypal info of a payer
 	static $paypal_keys = array('payer_email', 'txn_id', 'first_name', 'last_name', 'payment_type');
@@ -45,6 +45,9 @@ class WpDocumentRevisionsAddon{
 		add_action('wp_ajax_nopriv_DocRevision_Pric_Plan', array(get_class(), 'manipulate_price_and_plan_metabx'));
 		
 		//add_action('init', array(get_class(), 'manipulate_price_and_plan_metabx'));
+		
+		//payment completed
+		add_action('document_lock_notice', array(get_class(), 'document_lock_notice'), 10, 1);
 	}
 	
 	
@@ -216,5 +219,20 @@ class WpDocumentRevisionsAddon{
 		$plan_price = self::get_plans_prices();
 		
 		var_dump($plan_price);
+	}
+	
+	
+	/**
+	 * Document lock notices
+	 * */
+	static function document_lock_notice(){
+		if($_GET['payment_status'] == 'paid'){
+			?>
+			
+			<div class="updated"><p>We Received your payment. Please upload your document</p></div>
+			
+			<?php 
+					
+		}
 	}
 }

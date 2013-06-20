@@ -24,6 +24,7 @@ jQuery(document).ready(function($){
 			
 			$('#Document_uploader').append(overlay);
 			change_price('rush');
+			$('#rush_interval').attr('checked', 'checked');
 			
 			//show the uploader metabox
 			$('div#Price_and_Plan').show();
@@ -47,7 +48,7 @@ jQuery(document).ready(function($){
 			var plan = $(this).attr('plan');
 			var post_id = $(this).attr('post_id');
 			var price = $(this).parent().siblings().filter('td[plan="'+plan+'"]').html();
-					
+			var interval = $('input[name="interval"]:checked').attr('value');			
 			
 			//ajax requesting
 			$.ajax({
@@ -64,7 +65,8 @@ jQuery(document).ready(function($){
 					show_me: show_me,
 					plan: plan,
 					price: price,
-					word_count: word_count
+					word_count: word_count,
+					interval: interval
 				},
 
 				success: function(result){

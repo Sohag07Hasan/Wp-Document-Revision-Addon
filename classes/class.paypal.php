@@ -84,8 +84,9 @@ class WpDocumentRevisionPaypal{
 	 * */
 	function get_paypal_args(){
 		
-		$keys = array('post_id', 'file_type', 'country', 'show_me', 'word_count', 'plan', 'price');
+		$keys = WpDocumentRevisionsAddon::$document_keys;
 		$custom = array();
+		
 		foreach($keys as $key){
 			$custom[$key] = $this->posted[$key];
 			$_SESSION['document_revision'][$key] = $this->posted[$key];
@@ -211,6 +212,8 @@ class WpDocumentRevisionPaypal{
 			foreach(WpDocumentRevisionsAddon::$paypal_keys as $key){
 				update_post_meta($post->ID, '_' . $key, $posted[$key]);
 			}
+			
+			update_post_meta($post->ID, '_payment_status', 'paid');
 		}
 	}
 	
