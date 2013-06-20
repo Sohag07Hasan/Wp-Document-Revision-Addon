@@ -2,6 +2,7 @@
 <?php 
 	global $post;
 	$plan_price = self::get_plans_prices();	
+		
 ?>
 
 <div class="plan_and_price">

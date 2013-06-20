@@ -23,6 +23,12 @@ class WpDocumentRevisionsAddon{
 	
 	static $file_types = array('Word', 'TeX', 'PDF', 'PPT', 'Excel', 'Images');
 	
+	//keys that defines a document in database
+	static $document_keys = array('file_type', 'country', 'show_me', 'word_count', 'plan', 'price');
+	
+	//save the paypal info of a payer
+	static $paypal_keys = array('payer_email', 'txn_id', 'first_name', 'last_name', 'payment_type');
+	
 	
 	/**
 	 * static constructor
@@ -115,7 +121,7 @@ class WpDocumentRevisionsAddon{
 		remove_meta_box( 'postexcerpt', 'document', 'normal' );
 		remove_meta_box( 'tagsdiv-workflow_state', 'document', 'side' );
 		
-		remove_meta_box('submitdiv', 'document', 'side', 'core');
+		//remove_meta_box('submitdiv', 'document', 'side', 'core');
 		
 		
 		//add our meta boxes

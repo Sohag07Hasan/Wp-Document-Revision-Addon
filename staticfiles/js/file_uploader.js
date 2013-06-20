@@ -63,7 +63,8 @@ jQuery(document).ready(function($){
 					file_type: file_type,
 					show_me: show_me,
 					plan: plan,
-					price: price					
+					price: price,
+					word_count: word_count
 				},
 
 				success: function(result){
@@ -71,7 +72,10 @@ jQuery(document).ready(function($){
 						alert('Something Weired happens'); return false;
 					}
 					else{
+						
 						window.location.href = result;
+						//$('#footer-left').html(result);
+						//return false;
 					}
 				},
 

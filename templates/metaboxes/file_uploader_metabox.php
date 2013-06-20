@@ -1,3 +1,12 @@
+<?php 
+$custom = get_post_custom($post->ID);
+foreach ($custom as $key => $value){
+	echo '<p>'.$key.': '. $value[0] .'</p>';
+}
+
+
+?>
+
 <style>
 	div.file-uploader select, input#word_count{
 		min-width: 250px;
