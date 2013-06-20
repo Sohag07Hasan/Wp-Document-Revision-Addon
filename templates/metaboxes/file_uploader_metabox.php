@@ -1,11 +1,3 @@
-<?php 
-$custom = get_post_custom($post->ID);
-foreach ($custom as $key => $value){
-	echo '<p>'.$key.': '. $value[0] .'</p>';
-}
-
-
-?>
 
 <style>
 	div.file-uploader select, input#word_count{
@@ -37,7 +29,7 @@ foreach ($custom as $key => $value){
 				?>
 			</td> 
 		</tr>
-		
+		 
 		<tr>
 			<th>Show me *</th>
 			<td>
@@ -53,9 +45,13 @@ foreach ($custom as $key => $value){
 		
 	</table>
 	
+	<input type="hidden" id="current_page_url" value="<?php echo self::curPageURL(); ?>" />
+	
 	<!-- 
 	<div class="Paypal-message" style="display:none"> Wait ... </div>
 	<p id="paypal-payment"> <input type="button" value="Pay with Paypal" class="button button-primary" /></p>
 	 -->
 	
 </div>
+
+

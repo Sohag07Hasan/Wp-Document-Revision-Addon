@@ -28,6 +28,10 @@ jQuery(document).ready(function($){
 			
 			//show the uploader metabox
 			$('div#Price_and_Plan').show();
+			
+			var cur_url = $('#current_page_url').attr('value') + '#Price_and_Plan';
+			window.location.href = cur_url;
+			
 			$('div.overlay').remove();
 		}
 		
@@ -74,10 +78,10 @@ jQuery(document).ready(function($){
 						alert('Something Weired happens'); return false;
 					}
 					else{
-						
-						window.location.href = result;
+											
 						//$('#footer-left').html(result);
 						//return false;
+						window.location.href = result;
 					}
 				},
 

@@ -27,7 +27,7 @@ class WpDocumentRevisionsAddon{
 	static $document_keys = array('post_id', 'file_type', 'country', 'show_me', 'word_count', 'plan', 'price', 'interval');
 	
 	//save the paypal info of a payer
-	static $paypal_keys = array('payer_email', 'txn_id', 'first_name', 'last_name', 'payment_type');
+	static $paypal_keys = array('payer_email', 'txn_id', 'first_name', 'last_name', 'payment_type', 'mc_gross');
 	
 	
 	/**
@@ -39,12 +39,8 @@ class WpDocumentRevisionsAddon{
 		add_action('admin_enqueue_scripts', array(get_class(), 'admin_enqueue_scripts'));
 		
 		add_action('admin_menu', array(get_class(), 'admin_menu'));
-		
-		//actions to handle the payment
-		add_action('wp_ajax_DocRevision_Pric_Plan', array(get_class(), 'manipulate_price_and_plan_metabx'));
-		add_action('wp_ajax_nopriv_DocRevision_Pric_Plan', array(get_class(), 'manipulate_price_and_plan_metabx'));
-		
-		//add_action('init', array(get_class(), 'manipulate_price_and_plan_metabx'));
+						
+		//add_action('admin_init', array(get_class(), 'manipulate_price_and_plan_metabx'));
 		
 		//payment completed
 		add_action('document_lock_notice', array(get_class(), 'document_lock_notice'), 10, 1);
@@ -101,6 +97,24 @@ class WpDocumentRevisionsAddon{
 	
 	
 	/**
+	 * Document uploader metabox
+	 * @post post object
+	 * */
+	static function document_metabox($post){
+		include self::get_file_directory('templates/metaboxes/document_metabox.php');
+	}
+	
+	
+	
+	/**
+	 * function to check if a docuemnt is a paid version
+	 * */
+	static function is_paid_document($post_id){
+		return get_post_meta($post_id, '_payment_status', true) == 'paid' ? true : false;
+	}
+	
+	
+	/**
 	 * Filter the document rivisions metaboxes
 	 * */
 	function filtering_documents_metaboxes($args){		
@@ -117,6 +131,7 @@ class WpDocumentRevisionsAddon{
 	 */
 	static function meta_cb() {
 	
+		$post_id = $_GET['post'] ? $_GET['post'] : $_POST['post_ID'] ;
 		
 		//remove unused meta boxes
 		//remove_meta_box('submitdiv', 'document', 'side');
@@ -129,11 +144,19 @@ class WpDocumentRevisionsAddon{
 		
 		//add our meta boxes
 		add_meta_box( 'revision-summary', __('Revision Summary', 'wp-document-revisions'), array(&self::$metabox_object, 'revision_summary_cb'), 'document', 'normal', 'default' );
-		add_meta_box( 'document', __('Document', 'wp-document-revisions'), array(&self::$metabox_object, 'document_metabox'), 'document', 'normal', 'high' );
 		
-		//revised
-		add_meta_box('Document_uploader', 'Instant Search for Quotes', array(get_class(), 'file_uploader_metabox'), 'document', 'normal', 'core');
-		add_meta_box('Price_and_Plan', 'Price and Plan', array(get_class(), 'plan_price_metabox'), 'document', 'normal', 'core');
+		if(!empty($post_id) && self::is_paid_document($post_id)){
+			add_meta_box( 'document', __('Document', 'wp-document-revisions'), array(&self::$metabox_object, 'document_metabox'), 'document', 'normal', 'high' );
+			add_meta_box( 'payment_info', __('Payment Info', 'wp-document-revisions'), array(get_class(), 'document_metabox'), 'document', 'normal', 'high' );
+		}
+		else{
+
+			//revised
+			add_meta_box('Document_uploader', 'Instant Search for Quotes', array(get_class(), 'file_uploader_metabox'), 'document', 'normal', 'core');
+			add_meta_box('Price_and_Plan', 'Price and Plan', array(get_class(), 'plan_price_metabox'), 'document', 'normal', 'core');
+			
+		}		
+		
 		
 		if ( $post->post_content != '' )
 			add_meta_box( 'revision-log', 'Revision Log', array( &self::$metabox_object, 'revision_metabox'), 'document', 'normal', 'low' );
@@ -206,23 +229,6 @@ class WpDocumentRevisionsAddon{
 	
 	
 	/**
-	  Manipulation of ajax for showing and hide metabox price and plan with appropriate prefille data
-	 * */
-	static function manipulate_price_and_plan_metabx(){
-		
-		
-		$_SESSION['country'] = $_POST['country'];
-		$_SESSION['file_type'] = $_POST['file_type'];
-		$_SESSION['show_me'] = $_POST['show_me'];
-		$_SESSION['word_count'] = $_POST['word_count'];
-		
-		$plan_price = self::get_plans_prices();
-		
-		var_dump($plan_price);
-	}
-	
-	
-	/**
 	 * Document lock notices
 	 * */
 	static function document_lock_notice(){
@@ -235,4 +241,21 @@ class WpDocumentRevisionsAddon{
 					
 		}
 	}
+
+	
+	/*
+	 * get the current page url
+	 * */
+	static function curPageURL() {
+		$pageURL = 'http';
+		if ($_SERVER["HTTPS"] == "on") {$pageURL .= "s";}
+		$pageURL .= "://";
+		if ($_SERVER["SERVER_PORT"] != "80") {
+			$pageURL .= $_SERVER["SERVER_NAME"].":".$_SERVER["SERVER_PORT"].$_SERVER["REQUEST_URI"];
+		} else {
+			$pageURL .= $_SERVER["SERVER_NAME"].$_SERVER["REQUEST_URI"];
+		}
+		return $pageURL;
+	}
+
 }
