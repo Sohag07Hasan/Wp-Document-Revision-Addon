@@ -68,14 +68,14 @@ class WpDocumentRevisionsAddon{
 	/**
 	 * new submit meta boxes
 	 * */
-	static function new_submit_metabox(){
+	static function new_submit_metabox($post){
 		include self::get_file_directory('templates/metaboxes/new_submit_metabox.php');
 	}
 	
 	/**
 	 * plan and price metabox
 	 * */
-	static function plan_price_metabox(){
+	static function plan_price_metabox($post){
 		include self::get_file_directory('templates/metaboxes/plan_price_metabox.php');
 	}
 	
@@ -139,7 +139,9 @@ class WpDocumentRevisionsAddon{
 		remove_meta_box( 'postexcerpt', 'document', 'normal' );
 		remove_meta_box( 'tagsdiv-workflow_state', 'document', 'side' );
 		
-		//remove_meta_box('submitdiv', 'document', 'side', 'core');
+		remove_meta_box('submitdiv', 'document', 'side', 'core');
+		
+		add_meta_box( 'submitdiv2', __( 'Publish' ), array(get_class(), 'new_submit_metabox'), 'document', 'side', 'core' );
 		
 		
 		//add our meta boxes
